@@ -1,8 +1,17 @@
 // main.dart
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'theme_manager.dart';
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => ThemeManager(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -14,6 +23,8 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'KindCcode.com',
         theme: ThemeData(primarySwatch: Colors.indigo),
+        darkTheme: ThemeData.dark(),
+        themeMode: Provider.of<ThemeManager>(context).themeMode,
         home: const HomeScreen());
   }
 }
@@ -76,6 +87,21 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Kindacode.com'),
+        actions: [
+          // add theme switch button
+          ElevatedButton(
+            child: const Icon(Icons.lightbulb),
+            onPressed: () {
+              final themeManager =
+                  Provider.of<ThemeManager>(context, listen: false);
+              if (themeManager.themeMode == ThemeMode.light) {
+                themeManager.setThemeMode(ThemeMode.dark);
+              } else {
+                themeManager.setThemeMode(ThemeMode.light);
+              }
+            },
+          ),
+        ],
       ),
       // Show the bottom tab bar if screen width < 640
       bottomNavigationBar: MediaQuery.of(context).size.width < 640
